@@ -1,7 +1,9 @@
 # TFM Master Data Science
 ## Javier Gomez Maqueda
 
-Utilizamos datos de GDELT para observar la evolución de los artículos sobre ayuda y los enfrentamientos. Para ello procesamos la informacion con SPARK y despues creamos un dashboard con shiny. También se analizarán con R las evoluciones históricas.
+Utilizamos datos de GDELT para observar la evolución de los artículos sobre ayuda, intentos de ayuda y lucha en Siria. Procesamos la información para reducirla con SPARK y trabajamos los datos con Rshiny.
 
 ### Instrucciones de ejecucion
-Lanzar el archivo data process con la entrada de test_long (es un subconjunto de 1 dia de datos en GDELT). Esto proporciona una salida que es la que hay que leer con la app de shiny. Puede que haya que cambiar el nombre de los datos de entrada.
+1. Lanzar spider.py "python spider.py range -y 2011-2016 -d /home/javi/masterdatascience/TFM/pruebas/gdelt/ -U"
+2. Procesar la información con el programa data_process_gdelt.ipynb "$SPARK_HOME/bin/pyspark" **Ojo es SPARK 2.0.0**
+3. Lanzar desde R la app "runApp("syria")"
