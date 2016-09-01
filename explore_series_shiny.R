@@ -61,8 +61,8 @@ server <- function(input, output) {
       filter(date >= input$selectdate[1] && date <= input$selectdate[2])
   })
   output$articles <- renderPlotly({ 
-    g <- ggplot(filtered_data(), aes(date, sumNumArticles, colour = Event, label = maxArticle)) + geom_line()
-    ggplotly(g)
+    p <- plot_ly(filtered_data(), x = date, y = sumNumArticles, name = Event, color = Event)
+    p %>% layout(showLegend = TRUE)
   }) 
   output$weightedtone <- renderPlotly({ 
     g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
@@ -73,13 +73,17 @@ server <- function(input, output) {
     ggplotly(g)
   }) 
   output$itone <- renderPlotly({ 
-    g <- ggplot(filtered_data(), aes(date, importanceTone, colour = Event, label = maxArticle)) + geom_line() 
+    g <- ggplot(filtered_data(), aes(date, importanceTone, colour = Event, label = maxArticle)) + geom_line()
     ggplotly(g, tooltip = "label")
   }) 
   output$web <- renderText({
     s <- event_data("plotly_click")
-    str(s)
-    #HTML(readLines("http://ccaa.elpais.com/ccaa/2016/08/29/galicia/1472457096_146058.html"))
+    df <- filtered_data()
+    article <- df[df$date == s[["x"]] & df$sumNumArticles == s[["y"]],]$maxArticle
+    doc_html <- htmlParse(article, useInternalNodes = TRUE)
+    doc_text <- unlist(xpathApply(doc_html, '//p', xmlValue))
+    doc_header <- unlist(xpathApply(doc_html, '//h1', xmlValue))
+    doc_header
   })
 } 
 shinyApp(ui = ui, server = server)
