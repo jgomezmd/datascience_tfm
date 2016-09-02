@@ -4,8 +4,10 @@ library(plotly)
 library(shiny)
 library(httr)
 library(XML)
+library(RCurl)
 
-bigquery_basequery <- read.csv(file = 'Descargas/data_1', header = TRUE, sep = ",", dec = ".", na.strings = "", colClasses = "character")
+bigquery_basequery <- read.csv(file = 'Descargas/data_1', header = TRUE, sep = ",", dec = ".", 
+                               na.strings = "", colClasses = "character")
 
 length(na.exclude(bigquery_basequery$Actor1Geo_Lat))
 
@@ -49,7 +51,7 @@ ui <- fluidPage(
                   conditionalPanel(condition = 'input.selectvariable == "weightedTone"', plotlyOutput("weightedtone")),
                   conditionalPanel(condition = 'input.selectvariable == "importanceArticle"', plotlyOutput("iarticles")),
                   conditionalPanel(condition = 'input.selectvariable == "importanceTone"', plotlyOutput("itone")),
-                  textOutput('web')
+                  htmlOutput('web')
                   )
   )
 ) 
@@ -65,25 +67,34 @@ server <- function(input, output) {
     p %>% layout(showLegend = TRUE)
   }) 
   output$weightedtone <- renderPlotly({ 
-    g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
-    ggplotly(g)
+    #g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
+    #ggplotly(g)
+    p <- plot_ly(filtered_data(), x = date, y = weightedTone, name = Event, color = Event)
+    p %>% layout(showLegend = TRUE)    
   }) 
   output$iarticles <- renderPlotly({ 
-    g <- ggplot(filtered_data(), aes(date, importanceArticle, colour = Event, label = maxArticle)) + geom_line()
-    ggplotly(g)
+    p <- plot_ly(filtered_data(), x = date, y = importanceArticle, name = Event, color = Event)
+    p %>% layout(showLegend = TRUE)   
   }) 
   output$itone <- renderPlotly({ 
-    g <- ggplot(filtered_data(), aes(date, importanceTone, colour = Event, label = maxArticle)) + geom_line()
-    ggplotly(g, tooltip = "label")
+    p <- plot_ly(filtered_data(), x = date, y = importanceTone, name = Event, color = Event)
+    p %>% layout(showLegend = TRUE)   
   }) 
-  output$web <- renderText({
-    s <- event_data("plotly_click")
-    df <- filtered_data()
-    article <- df[df$date == s[["x"]] & df$sumNumArticles == s[["y"]],]$maxArticle
-    doc_html <- htmlParse(article, useInternalNodes = TRUE)
-    doc_text <- unlist(xpathApply(doc_html, '//p', xmlValue))
-    doc_header <- unlist(xpathApply(doc_html, '//h1', xmlValue))
-    doc_header
+  output$web <- renderUI({
+    event_reactive <- reactive({event_data("plotly_click")})
+    s <- event_reactive()
+    if (length(s[["x"]]) == 1) {
+      df <- filtered_data()
+      article <- df[df$date == s[["x"]] & df$sumNumArticles == s[["y"]],]$maxArticle
+      #article <- getURL(df[df$date == s[["x"]] & df[, input$selectvariable] == s[["y"]],]$maxArticle)
+      #HTML(readLines(article))}
+      #doc_html <- htmlTreeParse(article, asText = TRUE)
+      doc_html <- htmlParse(article, isURL = TRUE, useInternalNodes = TRUE)
+      doc_text <- unlist(xpathApply(doc_html, '//p', xmlValue))
+      doc_header <- unlist(xpathApply(doc_html, '//h1', xmlValue))
+      list(h3(doc_header),h5(doc_text[1]),a(article))}
+    else if (length(s[["x"]]) > 1) {h4("Select one point")}
+    else {h4("Click in the graph to select the most important article")}
   })
-} 
+}
 shinyApp(ui = ui, server = server)
