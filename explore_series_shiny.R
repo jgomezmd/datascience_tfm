@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(RColorBrewer)
 library(plotly)
 library(shiny)
 library(httr)
@@ -27,15 +28,33 @@ data_timeseries <- bigquery_basequery %>%
   mutate(weightedTone = sumimportanceTone / sumNumArticles)
 
 data_timeseries$Event <- NA
-data_timeseries[data_timeseries$EventRootCode == '02',]$Event <- "1. Appeal for aid"
-data_timeseries[data_timeseries$EventRootCode == '03',]$Event <- "2. Express intent to cooperate"
-data_timeseries[data_timeseries$EventRootCode == '07',]$Event <- "3. Provide aid"
-data_timeseries[data_timeseries$EventRootCode == '10',]$Event <- "4. Demand aid"
-data_timeseries[data_timeseries$EventRootCode == '18',]$Event <- "5. Assault"
-data_timeseries[data_timeseries$EventRootCode == '19',]$Event <- "6. Fight"
-data_timeseries[data_timeseries$EventRootCode == '20',]$Event <- "7. Mass violence"
+data_timeseries[data_timeseries$EventRootCode == '01',]$Event <- "01. Public statement"
+data_timeseries[data_timeseries$EventRootCode == '02',]$Event <- "02. Appeal"
+data_timeseries[data_timeseries$EventRootCode == '03',]$Event <- "03. Express intent to cooperate"
+data_timeseries[data_timeseries$EventRootCode == '04',]$Event <- "04. Consult"
+data_timeseries[data_timeseries$EventRootCode == '05',]$Event <- "05. Diplomatic Cooperation"
+data_timeseries[data_timeseries$EventRootCode == '06',]$Event <- "06. Material Cooperation"
+data_timeseries[data_timeseries$EventRootCode == '07',]$Event <- "07. Provide aid"
+data_timeseries[data_timeseries$EventRootCode == '08',]$Event <- "08. Yield"
+data_timeseries[data_timeseries$EventRootCode == '09',]$Event <- "09. Investigate"
+data_timeseries[data_timeseries$EventRootCode == '10',]$Event <- "10. Demand"
+data_timeseries[data_timeseries$EventRootCode == '11',]$Event <- "11. Disapprove"
+data_timeseries[data_timeseries$EventRootCode == '12',]$Event <- "12. Reject"
+data_timeseries[data_timeseries$EventRootCode == '13',]$Event <- "13. Threaten"
+data_timeseries[data_timeseries$EventRootCode == '14',]$Event <- "14. Protest"
+data_timeseries[data_timeseries$EventRootCode == '15',]$Event <- "15. Exhibit military posture"
+data_timeseries[data_timeseries$EventRootCode == '16',]$Event <- "16. Reduce relations"
+data_timeseries[data_timeseries$EventRootCode == '17',]$Event <- "17. Coerce"
+data_timeseries[data_timeseries$EventRootCode == '18',]$Event <- "18. Assault"
+data_timeseries[data_timeseries$EventRootCode == '19',]$Event <- "19. Fight"
+data_timeseries[data_timeseries$EventRootCode == '20',]$Event <- "20. Mass violence"
 
 data_timeseries$date <- as.Date(data_timeseries$date, "%Y%m%d")
+
+data_timeseries <- arrange(data_timeseries, Event)
+
+display.brewer.all(colorblindFriendly = TRUE)
+pal <- brewer.pal(nlevels(as.factor(sort(data_timeseries$Event))), "Dark2")
 
 ui <- fluidPage( 
   titlePanel(h2("Aid Syria")),
@@ -43,7 +62,7 @@ ui <- fluidPage(
                 sidebarPanel(
                   dateRangeInput(inputId = "selectdate", label = "date", min = "2011-01-01", max = "2016-08-15", start = "2011-01-01", end = '2016-08-15'),
                   selectInput(inputId = "selectevent", label = "event", 
-                              choices = sort(unique(as.character(data_timeseries$Event))),multiple = TRUE, selected = '3. Provide aid'),
+                              choices = sort(unique(as.character(data_timeseries$Event))),multiple = TRUE, selected = '07. Provide aid'),
                   selectInput(inputId = "selectvariable", label = "variable", choices = c("sumNumArticles","weightedTone", "importanceArticle","importanceTone"))
                 ),
                 mainPanel(
@@ -54,7 +73,7 @@ ui <- fluidPage(
                   htmlOutput('web')
                   )
   )
-) 
+)
 
 server <- function(input, output) { 
   filtered_data <- reactive({
@@ -63,21 +82,23 @@ server <- function(input, output) {
       filter(date >= input$selectdate[1] && date <= input$selectdate[2])
   })
   output$articles <- renderPlotly({ 
-    p <- plot_ly(filtered_data(), x = date, y = sumNumArticles, name = Event, color = Event)
-    p %>% layout(showLegend = TRUE)
+    p <- plot_ly(filtered_data(), x = date, y = sumNumArticles, name = Event, color = Event, colors = "Dark2", xaxis = "x1", yaxis = "y1")
+    p <- add_trace(p, x = date, y = weightedTone, name = Event, color = Event, colors = "Paired", xaxis = "x1", yaxis = "y2")
+    p %>% layout(showLegend = TRUE, yaxis = list(anchor = 'x', domain = c(0.55, 1)),
+                 yaxis2 = list(anchor = 'x', domain = c(0, 0.45), title = 'weightedTone'))
   }) 
   output$weightedtone <- renderPlotly({ 
     #g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
     #ggplotly(g)
-    p <- plot_ly(filtered_data(), x = date, y = weightedTone, name = Event, color = Event)
+    p <- plot_ly(filtered_data(), x = date, y = weightedTone, name = Event, color = Event, colors = pal)
     p %>% layout(showLegend = TRUE)    
   }) 
   output$iarticles <- renderPlotly({ 
-    p <- plot_ly(filtered_data(), x = date, y = importanceArticle, name = Event, color = Event)
+    p <- plot_ly(filtered_data(), x = date, y = importanceArticle, name = Event, color = Event, colors = pal)
     p %>% layout(showLegend = TRUE)   
   }) 
   output$itone <- renderPlotly({ 
-    p <- plot_ly(filtered_data(), x = date, y = importanceTone, name = Event, color = Event)
+    p <- plot_ly(filtered_data(), x = date, y = importanceTone, name = Event, color = Event, colors = pal)
     p %>% layout(showLegend = TRUE)   
   }) 
   output$web <- renderUI({
