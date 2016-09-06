@@ -1,5 +1,5 @@
 library(dplyr)
-library(ggplot2)
+#library(ggplot2)
 library(RColorBrewer)
 library(plotly)
 library(shiny)
@@ -114,7 +114,6 @@ server <- function(input, output) {
   })
   nonselected_event <- reactive({
     data_event %>%
-      filter(Event != input$selectevent) %>%
       filter(date >= input$selectdate[1] && date <= input$selectdate[2]) %>%
       arrange(date, sumNumArticles) %>%
       group_by(date) %>%
@@ -149,7 +148,7 @@ server <- function(input, output) {
   output$weightedtone <- renderPlotly({ 
     #g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
     #ggplotly(g)
-    p <- plot_ly(selected_event(), x = date, y = weightedTone, name = paste(input$selectevent, " Tone"), 
+    p <- plot_ly(nonselected_event(), x = date, y = weightedTone, name = paste(input$selectevent, " Tone"), 
                  marker = list(color = pal[4]), xaxis = "x1", yaxis = "y2", opacity = 0.8)
     p <- add_trace(selected_event(), x = date, y = sumNumArticles, name = paste(input$selectevent," Total"), 
                    marker = list(color = pal[2]), xaxis = "x1", yaxis = "y1", opacity = 0.8)
