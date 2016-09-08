@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 
 # Trabajo fin de máster 
 # Máster en Data Science, Universidad Rey Juan Carlos
@@ -5,11 +8,13 @@
 
 ### 1. Introducción y objetivos
 
+#### Introducción
+
 Desde 2011 se está viviendo en Siria una guerra civil en la que se enfrentan el gobierno sirio contra grupos de rebeldes. Algunos de estos grupos forman parte del estado islámico (Daesh) que ocupaba zonas en Irak. Lo que ha permitido al Daesh invadir territorios sirios. El conflicto comenzó en forma de protestas de civiles contra el gobierno sirio, enmarcadas en la llamada primavera árabe pero en pocos meses se tornó en una guerra civil.
 
 La motivación principal para realizar este proyecto es responder a la pregunta: ¿Cómo utilizan los medios las noticias?. La motivación secundaria es la realización de un proyecto de Data Science completo en la que intervinieran arquitecturas cloud, procesamiento en paralelo y la construcción de una aplicación que cualquier usuario pueda utilizar.
 
-**Objetivos:**
+#### Objetivos
 
 1. Comprender mejor el desarrollo de la guerra a partir de las noticias. 
 2. Conocer la repercusión que ha tenido el conflicto en el resto de países del mundo y cuándo ha ocurrido esta repercusión. 
@@ -58,7 +63,7 @@ Se ha decidido tratar la información a través de BigQuery porque de este modo 
 
 ### 3. Procesamiento de la información
 
-**1. Google BigQuery**
+#### 1. Google BigQuery
 
 Como se observa en el workflow, comenzamos el procesamiento utilizando google BigQuery. Con la siguiente consulta SQL 
 
@@ -73,7 +78,7 @@ Como se observa en el workflow, comenzamos el procesamiento utilizando google Bi
 
 Con ella se recopila toda la información a partir de 2011 de todos los eventos que han tenido a Siria como trasfondo. BigQuery tarda en realizar la consulta a la base de datos que contiene mas de 2.5 TeraBytes de información 20 segundos y reparte el resultado de 1.8 GigaBytes en 9 archivos realizando sharding que se descargan en local.
 
-**2. SPARK**
+#### 2. SPARK
 
 El siguiente paso a realizar es el tratamiento de la información con SPARK (v2.0.0). Para ello se ha creado un libro de jupyter con pyspark que contiene el código que se adjunta en el anexo:
 
@@ -97,7 +102,7 @@ Por último se estructura la información en 1 sólo datataframe (que estaba rep
 
 \pagebreak
 
-**3. Rshiny**
+#### 3. Rshiny
 
 *Procesado:* El procedimiento que se sigue es el siguiente:
 
@@ -148,6 +153,50 @@ Ambos gráficos contienen las siguientes opciones interactivas. Por un lado las 
 Por otro lado, se ha añadido una interacción adicional que consiste en: aprovechando que GDELT a partir del 1 de abril de 2013 contiene la URL de cada artículo, al seleccionar un sólo punto y pulsarlo realizamos un pequeño scrapping a la web y mediante las librerías httr y XML y el lenguaje de XPATH buscamos el título de la noticia y mostramos la dirección URL como enlace por si se quiere indagar sobre una noticia. De esta manera ayudamos al usuario a entender la información, ligándolo con los eventos de una forma directa.
 
 \pagebreak
+
+### 4. Análisis
+
+#### Repercusión global
+
+Al acceder en la aplicación, lo primero que se observa es el aumento del número de artículos a partir del 15 de marzo de 2011. Es curioso ya que anteriormente había habido protestas, pero no es hasta mediados de marzo cuando comienzan a escalar a otras ciudades y a producirse los primeros enfrentamientos entre el gobierno y los manifestantes. La repercusión de las noticias globales van de la mano con las protestas hasta octubre de 2011 pero el protagonismo a escala mundial lo están teniendo las luchas. Entorno al 20% de las noticias tratan sobre los enfrentamientos. Es interesante puntualizar que al comienzo del conflicto los enfrentamientos ocurrían en las protestas (englobadas dentro de las primaveras árabes), pero la repercusión que tuvieron los enfrentamientos es mayor. En general, durante todo el conflicto las noticias sobre luchas tienen mayor repercusión y marcan la evolución de las noticias en los medios.
+
+![protest](protest.png)
+
+En agosto de 2013 se observa un salto importante en las noticias que no se corresponde con los enfrentamientos, utilizando la interacción con el gráfico se muestran noticias relacionadas con armas químicas: La ONU acusa al gobierno Sirio de estar usando este tipo de armas. En este periodo aumentan considerablemente las declaraciones públicas y las mediaciones.
+
+![chemical](chemical.png)
+
+Tras estas acusaciones y, por segunda vez, la repercusión del conflicto se reduce, de más de 100.000 artículos publicados durante la mayoría de días en septiembre a 20.000 artículos. La primera vez que ocurrió este hecho es en mayo 2013 que se pasaron de 20.000 a 8.000, siendo este número inferior a los momentos de inicios de las protestas.
+
+En Agosto de 2014 el nº de noticias vuelve a crecer, principalmente debido a las noticias sobre enfrentamientos. En este periodo, EEUU, Siria y los rebeldes se alinearon para luchar contra el Daesh y comienzan los bombardeos sobre las posiciones de los yihadistas.
+
+![sept2014](sept2014.png)
+
+La repercusión se mantiene hasta septiembre de 2015. Con la crisis de los refugiados en europa ya iniciada las noticias no comienzan a aumentar hasta que llega la foto de Aylan. A partir de entonces la repercusión se mantiene hasta fecha, siendo las noticias sobre enfrentamientos y mediaciones las que ocupan la mayoría de artículos.
+
+#### Ayuda humanitaria
+
+Durante todo el conflicto, las noticias relacionadas con la ayuda humanitaria son escasas y apenas tienen repercusión. Durante la crisis de las armas químicas estas noticias llegan a multiplicarse por 10 pero un mes después vuelven a estar en los niveles anteriores. El impacto de este tipo de noticias no vuelve a ser importante hasta septiembre de 2015. En este momento, la suma de artículos sobre petición de ayuda es 20.000 frente a los 200.000 artículos globales. Puntualizar que durante este mes las noticias de enfrentamientos de nuevo vuelven a quedar relegadas a un segundo plano.
+
+![children_father](children_father.png)
+
+#### Tono global
+
+El tono global es el sentimiento prorrateado por la importancia de los artículos que se está teniendo sobre el conflicto. Es interesante tambien conocer el contexto de las noticias ya que en una sociedad global este puede cambiar como resultado de hechos ocurridos en otros lugares. 
+
+Antes de comenzar la guerra, los artículos sobre Siria estaban por encima del 5, es decir tenían un tono positvo bajo y al comenzar las protestas en febrero este tono se reduce a 4. 
+
+![tone1](tone1.png)
+
+Tras desaparecer las protestas y quedar únicamente el conflicto armado el tono baja a 2 y de repente en febrero de 2015 el tono baja a -5 que es donde se mantiene hasta la fecha. A partir de la aplicación es complicado conocer cual es el motivo de este cambio repentino. Tomando ayuda de otros recursos se podría entender que este cambio del sentimiento tan repentino se debe a los atentados en Francia a finales de enero de 2015 aunque no queda del todo claro ya que el cambio de tono se produce a mediados de febrero de 2015. La noticia más importante del 18 de febrero es que Siria se dispone a suspender los ataques aéreos sobre Aleppo que, en el contexto del conflicto, es una noticia muy positiva.
+
+![tone_feb2015](tone_feb2015.png)
+
+
+
+
+
+
 
 ### 6. Anexo: Códigos
 

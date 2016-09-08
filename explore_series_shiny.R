@@ -84,15 +84,17 @@ data_humanitarian$date <- as.Date(data_humanitarian$date, "%Y%m%d")
 pal <- brewer.pal(8, "Dark2") #colorblindFriendly Palette
 
 ui <- fluidPage( 
-  titlePanel(h2("Aid Syria")),
-  sidebarLayout(position = "left",
-                sidebarPanel(
+  titlePanel(wellPanel(h1(strong("Aid Syria")), style = "background-color: #ce1126; font-family: 'Courier'; color: #ffffff; 
+                       border-color: #000000")),
+  sidebarLayout(position = "left", 
+                sidebarPanel(wellPanel(
                   dateRangeInput(inputId = "selectdate", label = "Select date", min = "2011-01-01", max = "2016-08-31", 
                                  start = "2011-01-01", end = '2016-08-31'),
                   selectInput(inputId = "selectevent", label = "Select event", 
                               choices = sort(unique(as.character(data_processed$Event))), selected = '07. Provide aid*'),
                   selectInput(inputId = "selectvariable", label = "Select graph", choices = c("Articles","Tone vs Articles")),
-                width = 3),
+                style = "background-color: #bdbdbd; font-family: 'Courier'; color: #000000; border-color: #000000"), 
+                style = "background-color: #007a3d; border-color: #000000", width = 3),
                 mainPanel(
                   conditionalPanel(condition = 'input.selectvariable == "Articles"', plotlyOutput("articles")),
                   conditionalPanel(condition = 'input.selectvariable == "Tone vs Articles"', plotlyOutput("weightedtone")),
@@ -130,7 +132,7 @@ server <- function(input, output) {
   output$articles <- renderPlotly({ 
     p <- plot_ly(selected_event(), x = date, y = sumNumArticles, name = paste(input$selectevent, " Total"), 
                  marker = list(color = pal[2]), xaxis = "x1", yaxis = "y2", opacity = 0.8)
-    p <- add_trace(nonselected_event(), x = date, y = sumNumArticles, name = '00. Other events Total', 
+    p <- add_trace(nonselected_event(), x = date, y = sumNumArticles, name = '00. All events Total', 
                    marker = list(color = pal[1]), xaxis = "x1", yaxis = "y2", opacity = 0.8)
     p <- add_trace(selected_event(), x = date, y = sumNumArticles, name = paste(input$selectevent, " Total"), 
                    marker = list(color = pal[2]), xaxis = "x1", yaxis = "y1", opacity = 0.8)
@@ -148,7 +150,7 @@ server <- function(input, output) {
   output$weightedtone <- renderPlotly({ 
     #g <- ggplot(filtered_data(), aes(date, weightedTone, colour = Event, label = maxArticle)) + geom_line()
     #ggplotly(g)
-    p <- plot_ly(nonselected_event(), x = date, y = weightedTone, name = paste(input$selectevent, " Tone"), 
+    p <- plot_ly(nonselected_event(), x = date, y = weightedTone, name = "00. All events W tone", 
                  marker = list(color = pal[4]), xaxis = "x1", yaxis = "y2", opacity = 0.8)
     p <- add_trace(selected_event(), x = date, y = sumNumArticles, name = paste(input$selectevent," Total"), 
                    marker = list(color = pal[2]), xaxis = "x1", yaxis = "y1", opacity = 0.8)
@@ -197,7 +199,7 @@ server <- function(input, output) {
       doc_html <- htmlParse(GET(article), isURL = TRUE, useInternalNodes = TRUE)
       #doc_text <- unlist(xpathApply(doc_html, '//body//p/*[1]', xmlValue))
       doc_header <- unlist(xpathApply(doc_html, '//body//h1', xmlValue))
-      list(h3(doc_header[1]))}
+      list(h3(strong(doc_header[1])))}
     else if (length(s[["x"]]) > 1) {h4("Select one point")}
     else {h4("Click in the graph to select the most important article")}
   })
