@@ -262,8 +262,6 @@ Durante la elaboración de este trabajo, además del interés que personalmente 
 - Visualización con shiny. R está teniendo cada vez más impacto en el mundo empresarial. Quería hacer visualizaciones con shiny para poder trabajar después con ello. Un ejemplo de un trabajo que ya he realizado fuera del máster ha sido una aplicación destinada a dirección para explorar los niveles salariales de la compañía y compararlos con los del mercado.
 - Desarrollo completo de un proyecto de data science: Probablemente lo que más me ha importado y motivado a lo largo de el desarrollo del trabajo. Sentir la capacidad de poder realizar un proyecto completo y la satisfacción de mejorar con los pequeños hitos que iba consiguiendo.
 
-Adicionalmente he trabajado con herramientas como git, github y markdown. Hice una pequeña mejora en una araña de GDELT[6] con python
-
 \pagebreak
 
 ### 6. Bibliografía y referencias
@@ -277,8 +275,6 @@ Adicionalmente he trabajado con herramientas como git, github y markdown. Hice u
 [4](http://data.gdeltproject.org/documentation/GDELT-Data_Format_Codebook.pdf) GDELT Data Format Codebook
 
 [5] Automated data collection with R por Simon Munzert, Christian Rubba, Peter Meißner y Dominic Nyhuis. Wiley 2015
- 
-[6](https://github.com/00krishna-tools/gdelt_download) Github 00krishna
 
 Además de las referencias también se ha utilizado para realizar el trabajo:
 
