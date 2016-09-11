@@ -1,11 +1,12 @@
-library(dplyr)
-library(RColorBrewer)
-library(plotly)
+
 library(shiny)
 library(httr)
 library(XML)
+library(dplyr)
+library(RColorBrewer)
+library(plotly)
 
-data_processed <- read.csv(file = 'data.csv/data_processed.csv', 
+data_processed <- read.csv(file = '/home/javi/masterdatascience/TFM/data_bigquery_processed/data_processed.csv', 
                            header = TRUE, sep = ",", dec = ".", na.strings = "", colClasses = "character")
 
 data_processed$sumNumArticles <- as.numeric(data_processed$sumNumArticles)
@@ -81,30 +82,8 @@ data_humanitarian$date <- as.Date(data_humanitarian$date, "%Y%m%d")
 
 pal <- brewer.pal(8, "Dark2") #colorblindFriendly Palette
 
-ui <- fluidPage( 
-  titlePanel(wellPanel(h1(strong("Aid Syria")), style = "background-color: #ce1126; font-family: 'Courier'; color: #ffffff; 
-                       border-color: #000000")),
-  sidebarLayout(position = "left", 
-                sidebarPanel(wellPanel(
-                  dateRangeInput(inputId = "selectdate", label = "Select date", min = "2011-01-01", max = "2016-08-31", 
-                                 start = "2011-01-01", end = '2016-08-31'),
-                  selectInput(inputId = "selectevent", label = "Select event", 
-                              choices = sort(unique(as.character(data_processed$Event))), selected = '07. Provide aid*'),
-                  selectInput(inputId = "selectvariable", label = "Select graph", choices = c("Articles","Tone vs Articles")),
-                  style = "background-color: #bdbdbd; font-family: 'Courier'; color: #000000; border-color: #000000"), 
-                  style = "background-color: #007a3d; border-color: #000000", width = 3),
-                mainPanel(
-                  conditionalPanel(condition = 'input.selectvariable == "Articles"', plotlyOutput("articles")),
-                  conditionalPanel(condition = 'input.selectvariable == "Tone vs Articles"', plotlyOutput("weightedtone")),
-                  htmlOutput('info'),
-                  htmlOutput('article'),
-                  htmlOutput('web'),
-                  width = 9
-                )
-  )
-)
-
 server <- function(input, output) { 
+  
   selected_event <- reactive({
     data_event %>%
       filter(Event == input$selectevent) %>%

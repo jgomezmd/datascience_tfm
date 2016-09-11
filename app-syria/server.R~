@@ -5,7 +5,7 @@ library(shiny)
 library(httr)
 library(XML)
 
-data_processed <- read.csv(file = '/home/javi/masterdatascience/TFM/data_bigquery_processed/data_processed.csv', 
+data_processed <- read.csv(file = '/home/javi/masterdatascience/TFM/tfmproyecto/data.csv/data_processed.csv', 
                            header = TRUE, sep = ",", dec = ".", na.strings = "", colClasses = "character")
 
 data_processed$sumNumArticles <- as.numeric(data_processed$sumNumArticles)
