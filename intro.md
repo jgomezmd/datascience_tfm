@@ -1,8 +1,8 @@
 ---
-title: "Trabajo Fin de Máster: Máster en Data Science. URJC"
-author: "Javier Gómez Maqueda"
+title: 'Trabajo Fin de Máster: Máster en Data Science. URJC'
+author: "José Felipe Ortega Soto, Javier Gómez Maqueda"
 date: "10 de septiembre de 2016"
-output: html_document
+output: pdf_document
 ---
 
 ## Visualización de datos pertenecientes a GDELT: Análisis de los artículos relacionados con la guerra de Siria.
@@ -28,7 +28,7 @@ La motivación principal para realizar este proyecto es responder a la pregunta:
 
 #### Herramientas
 
-Como fuente de datos se utilizará GDELT. Para procesar la información, google BigQuery y SPARK y, por último, se construirá una visualización con Rshiny. La elección de estas herramientas viene motivada por dos aspectos. El primero y, por lo que se utilizó BigQuery es por conveniencia, ya que, al ser GDELT un proyecto de google la integración era más sencilla. El conjunto de tablas completo de GDELT está alojado en el cloud de google y mediante SQL podemos realizar las consultas pertinentes. El segundo motivo es el aprendizaje, profundizar en el conocimiento de SPARK y Rshiny. Bajo este motivo nos encontramos la elección de SPARK ya que con BigQuery nos podríamos haber ahorrado este elemento del workflow con sencillez.
+Como fuente de datos se utilizará GDELT. Para procesar la información, google BigQuery y SPARK y, por último, se construirá una visualización con Rshiny. La elección de estas herramientas viene motivada por dos aspectos. El primero, por lo que se utilizó BigQuery, es por conveniencia ya que al ser GDELT un proyecto de google la integración era más sencilla. El conjunto de tablas completo de GDELT está alojado en el cloud de google y mediante SQL podemos realizar las consultas pertinentes. El segundo motivo es el aprendizaje, profundizar en el conocimiento de SPARK y Rshiny. De esta forma elegimos SPARK ya que con BigQuery nos podríamos haber ahorrado este elemento del workflow con sencillez.
 
 ![workflow](workflow.jpeg)
 
@@ -46,9 +46,9 @@ Como fuente de datos se utilizará GDELT. Para procesar la información, google 
 
 El proyecto GDELT consiste en más de 2.500 millones de registros de eventos en más de 300 categorías que cubren el mundo entero desde 1979 junto con un diagrama de red masiva que permite conectar las personas, organizaciones, ubicaciones, temas y emociones. La visión de GDELT es aprovechar estos datos para construir un catálogo de comportamiento de la sociedad en todos los países del mundo y conectarlo en una red masiva que captura lo que está sucediendo en todo el mundo: el contexto, las partes involucradas y cómo se está sintiendo[3].
 
-GDELT se basa en cientos de miles de broadcast, noticias impresas y online capturadas en todos los rincones del mundo en más de 100 idiomas. Además del material de noticias traducido, el archivo retrospectivo histórico de GDELT se remonta hasta 1979.
+GDELT se basa en cientos de miles de broadcast, noticias impresas y online capturadas en todos los rincones del mundo en más de 100 idiomas. El archivo retrospectivo histórico de GDELT se remonta hasta 1979.
 
-El formato de los datos es una tabla .csv y en cada registro de la tabla podemos encontrar[4]:
+El formato de los datos es una tabla .csv y en cada registro[4] de la tabla podemos encontrar:
 
 *EventID y atributos de fecha:* Los primeros campos de cada registro traen su identificador único y la fecha en la que ocurrió el evento.
 
@@ -83,7 +83,7 @@ Como se observa en el workflow, comenzamos el procesamiento utilizando google Bi
 	  AND Year >= 2011
 	;
 
-Con ella se recopila toda la información a partir de 2011 de todos los eventos que han tenido a Siria como trasfondo. BigQuery tarda en realizar la consulta a la base de datos que contiene mas de 2.5 TeraBytes de información 20 segundos y reparte el resultado de 1.8 GigaBytes en 9 archivos realizando sharding que se descargan en local.
+Con ella se recopila toda la información a partir de 2011 de todos los eventos que han tenido a Siria como trasfondo. BigQuery tarda en realizar la consulta a la base de datos que contiene mas de 250 millones de registros en 20 segundos y reparte el resultado de 1.8 GigaBytes en 9 archivos realizando sharding que se descargan en local.
 
 #### 2. SPARK
 
@@ -124,9 +124,13 @@ En la primera etapa lee los ficheros y filtra la información. Como resultado, y
 Las librerías que se han utilizado para la parte de R son:
 
 *dplyr:* orientado al procesamiento de la información, es una librería muy potente que permite trabajar con la información de forma sencilla y explícita, de tal forma que sin ser un experto en este paquete se puede comprender con facilidad como se trabaja con la información.
+
 *shiny:* como se indica en las motivaciones, una parte importante es hacer una visualización con R. Shiny es una herramienta que nos permite hacer visualizaciones interactivas para que el usuario final se sienta cómodo explorando la información.
+
 *RColorBrewer:* para seleccionar la paleta de colores.
+
 *plotly:* esta librería permite crear gráficos interactivos de una forma similar a ggplot. Han sido estas opciones de interacción las que han convertido a plotly en la librería elegida.
+
 *httr y XML:* con estas librerías se puede realizar scrapping a las webs. Con httr realizamos las peticiones y con XML esquematizamos el HTML y buscamos los titulares.
 
 Partes del programa:
@@ -240,9 +244,9 @@ Tras desaparecer las protestas y quedar únicamente el conflicto armado el tono 
 
 Es complicado comprender el desarrollo de la guerra a partir de la repercusión de las noticias a escala mundial ya que esta no esta relacionado con los hechos sino con los hechos que impactan al resto de países, se ha observado que la repercusión caía hasta que llegaron noticias sobre el uso de armas químicas o comenzaba la crisis de los refugiados. Entonces la repercusión global crecía de nuevo.
 
-La guerra de Siria ha tenido una repercusión importante a escala global aunque, como se indica anteriormente, esta repercusión a gran escala es puntual.
+La guerra de Siria ha tenido una repercusión importante a escala global aunque, como se indica anteriormente, esta repercusión es puntual, a pesar del número de víctimas del conflicto.
 
-No existe correlación entre las noticias de ayuda humanitaria, los enfrentamientos, y los envíos de ayuda. Se comenzó a hablar de ayuda humanitaria a partir de septiembre de 2015, es decir, 4 años después del comienzo de la guerra y aunque los envíos de ayuda si estan relacionados con las noticias sobre ayuda, estas noticias apenas tienen repercusión. En parte porque la mayoría de los envíos de ayuda son tímidos. Las noticias de ayuda militar si tuvieron gran repercusión. Este hecho puede deberse a que esta ayuda está orientada a terminar con el Daesh que, tras realizar numerosos atentados en Europa ha conseguido llamar la atención de la población mundial. 
+No existe correlación entre las noticias de ayuda humanitaria, los enfrentamientos, y los envíos de ayuda. Se comenzó a hablar de ayuda humanitaria a partir de septiembre de 2015, es decir, 4 años después del comienzo de la guerra y aunque los envíos de ayuda si estan relacionados con las noticias sobre ayuda, estas noticias apenas tienen repercusión. Las noticias de ayuda militar si tuvieron gran repercusión. Este hecho puede deberse a que esta ayuda está orientada a terminar con el Daesh que, tras realizar numerosos atentados en Europa ha conseguido llamar la atención de la población mundial. 
 
 #### Líneas de trabajo futuras
 
@@ -262,8 +266,6 @@ Durante la elaboración de este trabajo, además del interés que personalmente 
 - Visualización con shiny. R está teniendo cada vez más impacto en el mundo empresarial. Quería hacer visualizaciones con shiny para poder trabajar después con ello. Un ejemplo de un trabajo que ya he realizado fuera del máster ha sido una aplicación destinada a dirección para explorar los niveles salariales de la compañía y compararlos con los del mercado.
 - Desarrollo completo de un proyecto de data science: Probablemente lo que más me ha importado y motivado a lo largo de el desarrollo del trabajo. Sentir la capacidad de poder realizar un proyecto completo y la satisfacción de mejorar con los pequeños hitos que iba consiguiendo.
 
-Adicionalmente he trabajado con herramientas como git, github y markdown. Hice una pequeña mejora en una araña de GDELT[6] con python
-
 \pagebreak
 
 ### 6. Bibliografía y referencias
@@ -277,8 +279,6 @@ Adicionalmente he trabajado con herramientas como git, github y markdown. Hice u
 [4](http://data.gdeltproject.org/documentation/GDELT-Data_Format_Codebook.pdf) GDELT Data Format Codebook
 
 [5] Automated data collection with R por Simon Munzert, Christian Rubba, Peter Meißner y Dominic Nyhuis. Wiley 2015
- 
-[6](https://github.com/00krishna-tools/gdelt_download) Github 00krishna
 
 Además de las referencias también se ha utilizado para realizar el trabajo:
 
